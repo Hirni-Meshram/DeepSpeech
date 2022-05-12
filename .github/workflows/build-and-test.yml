@@ -42,7 +42,7 @@ jobs:
           sudo apt-get install -y --no-install-recommends autoconf automake bison build-essential mingw-w64
         if: steps.swig-build-cache.outputs.cache-hit != 'true'
       - run: |
-          curl -sSL https://ftp.pcre.org/pub/pcre/pcre-8.43.tar.gz > pcre-8.43.tar.gz
+          curl -sSL https://sourceforge.net/projects/pcre/files/pcre/8.43/pcre-8.43.tar.gz > pcre-8.43.tar.gz
         if: steps.swig-build-cache.outputs.cache-hit != 'true'
       - run: |
           ./Tools/pcre-build.sh --host=x86_64-w64-mingw32
@@ -87,7 +87,7 @@ jobs:
           sudo apt-get install -y --no-install-recommends autoconf automake bison build-essential
         if: steps.swig-build-cache.outputs.cache-hit != 'true'
       - run: |
-          curl -sSL https://ftp.pcre.org/pub/pcre/pcre-8.43.tar.gz > pcre-8.43.tar.gz
+          curl -sSL https://sourceforge.net/projects/pcre/files/pcre/8.43/pcre-8.43.tar.gz > pcre-8.43.tar.gz
         if: steps.swig-build-cache.outputs.cache-hit != 'true'
       - run: |
           ./Tools/pcre-build.sh
@@ -2504,6 +2504,18 @@ jobs:
           numpy_dep: "${{ steps.get_numpy.outputs.dep_version }}"
           target: ${{ env.SYSTEM_TARGET }}
           chroot: ${{ env.SYSTEM_RASPBIAN }}
+      - name: Rename wheel
+        shell: bash
+        run: |
+          apt-get install rename
+          cd wheel
+          rename 's/manylinux_2_17_aarch64.manylinux2014/linux' *.whl
+          cd ..
+      - name: Release to pypi
+        shell: bash
+        run: |
+          python3 -m pip install twine
+          python3 -m twine upload wheel/*          
       - uses: actions/upload-artifact@v2
         with:
           name: "deepspeech-${{ matrix.build-flavor }}-${{ matrix.python-version }}-${{ matrix.arch }}.whl"
