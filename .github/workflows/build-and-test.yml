@@ -2507,7 +2507,7 @@ jobs:
       - name: Rename wheel
         shell: bash
         run: |
-          apt-get install rename
+          sudo apt-get install rename
           cd wheel
           rename 's/manylinux_2_17_aarch64.manylinux2014/linux' *.whl
           cd ..
